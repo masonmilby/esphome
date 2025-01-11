@@ -1,0 +1,67 @@
+esp32_ble_tracker:
+
+ble_client:
+  - mac_address: CC:90:93:18:95:93
+    id: soundsend_blec
+
+soundsend:
+  - id: soundsend_1
+    ble_client_id: soundsend_blec
+
+number:
+  - platform: soundsend
+    soundsend_id: soundsend_1
+    volume:
+      name: "Volume"
+    lip_sync:
+      name: "Lip Sync"
+    eq_high:
+      name: "EQ High"
+    eq_mid_range:
+      name: "EQ Mid Range"
+    eq_voice:
+      name: "EQ Voice"
+    eq_mid_bass:
+      name: "EQ Mid Bass"
+    eq_sub:
+      name: "EQ Sub"
+
+switch:
+  - platform: soundsend
+    soundsend_id: soundsend_1
+    mute:
+      name: "Mute"
+    power:
+      name: "Power"
+    virtual_dolby:
+      name: "Virtual Dolby"
+    bass_management:
+      name: "Bass Management"
+
+  - platform: ble_client
+    id: ble_connection
+    ble_client_id: soundsend_blec
+    name: "BLE Connection"
+    entity_category: "diagnostic"
+
+text_sensor:
+  - platform: soundsend
+    soundsend_id: soundsend_1
+    module_versions:
+      name: "Module Versions"
+    audio_format:
+      name: "Audio Format"
+
+select:
+  - platform: soundsend
+    soundsend_id: soundsend_1
+    audio_source:
+      name: "Audio Source"
+    audio_mode:
+      name: "Audio Mode"
+
+button:
+  - platform: soundsend
+    soundsend_id: soundsend_1
+    query:
+      name: "Query"
