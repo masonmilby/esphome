@@ -378,7 +378,7 @@ void SoundSendComponent::parse_reply_(uint8_t *data, uint16_t length) {
 
       case SoundSendPacket::Command::SPEAKER_TRIM: {
         SpeakerType speaker_type = static_cast<SpeakerType>(rx_packet.data()[0]);
-        uint8_t value = rx_packet.data()[1];
+        int8_t value = static_cast<int8_t>(rx_packet.data()[1]);
 
         switch (speaker_type) {
           case SpeakerType::FRONT_LEFT:
