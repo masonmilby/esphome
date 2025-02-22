@@ -13,6 +13,13 @@ EqVoiceNumber = soundsend_ns.class_("EqVoiceNumber", number.Number)
 EqMidBassNumber = soundsend_ns.class_("EqMidBassNumber", number.Number)
 EqSubNumber = soundsend_ns.class_("EqSubNumber", number.Number)
 
+TrimFrontLeftNumber = soundsend_ns.class_("TrimFrontLeftNumber", number.Number)
+TrimFrontRightNumber = soundsend_ns.class_("TrimFrontRightNumber", number.Number)
+TrimCenterNumber = soundsend_ns.class_("TrimCenterNumber", number.Number)
+TrimSubwooferNumber = soundsend_ns.class_("TrimSubwooferNumber", number.Number)
+TrimSurroundLeftNumber = soundsend_ns.class_("TrimSurroundLeftNumber", number.Number)
+TrimSurroundRightNumber = soundsend_ns.class_("TrimSurroundRightNumber", number.Number)
+
 CONF_VOLUME = "volume"
 CONF_LIP_SYNC = "lip_sync"
 CONF_EQ_HIGH = "eq_high"
@@ -20,6 +27,13 @@ CONF_EQ_MID_RANGE = "eq_mid_range"
 CONF_EQ_VOICE = "eq_voice"
 CONF_EQ_MID_BASS = "eq_mid_bass"
 CONF_EQ_SUB = "eq_sub"
+
+CONF_TRIM_FRONT_LEFT = "trim_front_left"
+CONF_TRIM_FRONT_RIGHT = "trim_front_right"
+CONF_TRIM_CENTER = "trim_center"
+CONF_TRIM_SUBWOOFER = "trim_subwoofer"
+CONF_TRIM_SURROUND_LEFT = "trim_surround_left"
+CONF_TRIM_SURROUND_RIGHT = "trim_surround_right"
 
 CONFIG_SCHEMA = cv.Schema(
     {
@@ -59,6 +73,36 @@ CONFIG_SCHEMA = cv.Schema(
             EqSubNumber,
             entity_category=ENTITY_CATEGORY_CONFIG,
             icon="mdi:cosine-wave",
+        ),
+        cv.Optional(CONF_TRIM_FRONT_LEFT): number.number_schema(
+            TrimFrontLeftNumber,
+            entity_category=ENTITY_CATEGORY_CONFIG,
+            icon="mdi:knob",
+        ),
+        cv.Optional(CONF_TRIM_FRONT_RIGHT): number.number_schema(
+            TrimFrontRightNumber,
+            entity_category=ENTITY_CATEGORY_CONFIG,
+            icon="mdi:knob",
+        ),
+        cv.Optional(CONF_TRIM_CENTER): number.number_schema(
+            TrimCenterNumber,
+            entity_category=ENTITY_CATEGORY_CONFIG,
+            icon="mdi:knob",
+        ),
+        cv.Optional(CONF_TRIM_SUBWOOFER): number.number_schema(
+            TrimSubwooferNumber,
+            entity_category=ENTITY_CATEGORY_CONFIG,
+            icon="mdi:knob",
+        ),
+        cv.Optional(CONF_TRIM_SURROUND_LEFT): number.number_schema(
+            TrimSurroundLeftNumber,
+            entity_category=ENTITY_CATEGORY_CONFIG,
+            icon="mdi:knob",
+        ),
+        cv.Optional(CONF_TRIM_SURROUND_RIGHT): number.number_schema(
+            TrimSurroundRightNumber,
+            entity_category=ENTITY_CATEGORY_CONFIG,
+            icon="mdi:knob",
         ),
     }
 )
@@ -136,3 +180,63 @@ async def to_code(config):
         )
         await cg.register_parented(var, soundsend_component)
         cg.add(soundsend_component.set_eq_sub_number(var))
+
+    if trim_front_left_config := config.get(CONF_TRIM_FRONT_LEFT):
+        var = await number.new_number(
+            trim_front_left_config,
+            min_value=-12,
+            max_value=5,
+            step=1,
+        )
+        await cg.register_parented(var, soundsend_component)
+        cg.add(soundsend_component.set_trim_front_left_number(var))
+
+    if trim_front_right_config := config.get(CONF_TRIM_FRONT_RIGHT):
+        var = await number.new_number(
+            trim_front_right_config,
+            min_value=-12,
+            max_value=5,
+            step=1,
+        )
+        await cg.register_parented(var, soundsend_component)
+        cg.add(soundsend_component.set_trim_front_right_number(var))
+
+    if trim_center_config := config.get(CONF_TRIM_CENTER):
+        var = await number.new_number(
+            trim_center_config,
+            min_value=-12,
+            max_value=5,
+            step=1,
+        )
+        await cg.register_parented(var, soundsend_component)
+        cg.add(soundsend_component.set_trim_center_number(var))
+
+    if trim_subwoofer_config := config.get(CONF_TRIM_SUBWOOFER):
+        var = await number.new_number(
+            trim_subwoofer_config,
+            min_value=-12,
+            max_value=5,
+            step=1,
+        )
+        await cg.register_parented(var, soundsend_component)
+        cg.add(soundsend_component.set_trim_subwoofer_number(var))
+
+    if trim_surround_left_config := config.get(CONF_TRIM_SURROUND_LEFT):
+        var = await number.new_number(
+            trim_surround_left_config,
+            min_value=-12,
+            max_value=5,
+            step=1,
+        )
+        await cg.register_parented(var, soundsend_component)
+        cg.add(soundsend_component.set_trim_surround_left_number(var))
+
+    if trim_surround_right_config := config.get(CONF_TRIM_SURROUND_RIGHT):
+        var = await number.new_number(
+            trim_surround_right_config,
+            min_value=-12,
+            max_value=5,
+            step=1,
+        )
+        await cg.register_parented(var, soundsend_component)
+        cg.add(soundsend_component.set_trim_surround_right_number(var))

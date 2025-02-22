@@ -81,6 +81,31 @@ void SoundSendComponent::get_eq_sub() {
   this->queue_command(SoundSendPacket::Type::READ, SoundSendPacket::Command::EQ_SUB);
 }
 
+void SoundSendComponent::get_trim_front_left() {
+  this->queue_command(SoundSendPacket::Type::READ, SoundSendPacket::Command::SPEAKER_TRIM,
+                      {static_cast<uint8_t>(SpeakerType::FRONT_LEFT)});
+}
+void SoundSendComponent::get_trim_front_right() {
+  this->queue_command(SoundSendPacket::Type::READ, SoundSendPacket::Command::SPEAKER_TRIM,
+                      {static_cast<uint8_t>(SpeakerType::FRONT_RIGHT)});
+}
+void SoundSendComponent::get_trim_center() {
+  this->queue_command(SoundSendPacket::Type::READ, SoundSendPacket::Command::SPEAKER_TRIM,
+                      {static_cast<uint8_t>(SpeakerType::CENTER)});
+}
+void SoundSendComponent::get_trim_subwoofer() {
+  this->queue_command(SoundSendPacket::Type::READ, SoundSendPacket::Command::SPEAKER_TRIM,
+                      {static_cast<uint8_t>(SpeakerType::SUBWOOFER)});
+}
+void SoundSendComponent::get_trim_surround_left() {
+  this->queue_command(SoundSendPacket::Type::READ, SoundSendPacket::Command::SPEAKER_TRIM,
+                      {static_cast<uint8_t>(SpeakerType::SURROUND_LEFT)});
+}
+void SoundSendComponent::get_trim_surround_right() {
+  this->queue_command(SoundSendPacket::Type::READ, SoundSendPacket::Command::SPEAKER_TRIM,
+                      {static_cast<uint8_t>(SpeakerType::SURROUND_RIGHT)});
+}
+
 void SoundSendComponent::set_volume(uint8_t value) {
   this->queue_command(SoundSendPacket::Type::WRITE, SoundSendPacket::Command::VOLUME, {value});
 }
@@ -101,6 +126,31 @@ void SoundSendComponent::set_eq_mid_bass(uint8_t value) {
 }
 void SoundSendComponent::set_eq_sub(uint8_t value) {
   this->queue_command(SoundSendPacket::Type::WRITE, SoundSendPacket::Command::EQ_SUB, {value});
+}
+
+void SoundSendComponent::set_trim_front_left(uint8_t value) {
+  this->queue_command(SoundSendPacket::Type::WRITE, SoundSendPacket::Command::SPEAKER_TRIM,
+                      {static_cast<uint8_t>(SpeakerType::FRONT_LEFT), value});
+}
+void SoundSendComponent::set_trim_front_right(uint8_t value) {
+  this->queue_command(SoundSendPacket::Type::WRITE, SoundSendPacket::Command::SPEAKER_TRIM,
+                      {static_cast<uint8_t>(SpeakerType::FRONT_RIGHT), value});
+}
+void SoundSendComponent::set_trim_center(uint8_t value) {
+  this->queue_command(SoundSendPacket::Type::WRITE, SoundSendPacket::Command::SPEAKER_TRIM,
+                      {static_cast<uint8_t>(SpeakerType::CENTER), value});
+}
+void SoundSendComponent::set_trim_subwoofer(uint8_t value) {
+  this->queue_command(SoundSendPacket::Type::WRITE, SoundSendPacket::Command::SPEAKER_TRIM,
+                      {static_cast<uint8_t>(SpeakerType::SUBWOOFER), value});
+}
+void SoundSendComponent::set_trim_surround_left(uint8_t value) {
+  this->queue_command(SoundSendPacket::Type::WRITE, SoundSendPacket::Command::SPEAKER_TRIM,
+                      {static_cast<uint8_t>(SpeakerType::SURROUND_LEFT), value});
+}
+void SoundSendComponent::set_trim_surround_right(uint8_t value) {
+  this->queue_command(SoundSendPacket::Type::WRITE, SoundSendPacket::Command::SPEAKER_TRIM,
+                      {static_cast<uint8_t>(SpeakerType::SURROUND_RIGHT), value});
 }
 
 // Switches
@@ -192,6 +242,13 @@ void SoundSendComponent::get_initial() {
   this->get_eq_voice();
   this->get_eq_mid_bass();
   this->get_eq_sub();
+
+  this->get_trim_front_left();
+  this->get_trim_front_right();
+  this->get_trim_center();
+  this->get_trim_subwoofer();
+  this->get_trim_surround_left();
+  this->get_trim_surround_right();
 
   this->get_mute();
   this->get_virtual_dolby();
@@ -319,6 +376,47 @@ void SoundSendComponent::parse_reply_(uint8_t *data, uint16_t length) {
         }
         break;
 
+      case SoundSendPacket::Command::SPEAKER_TRIM: {
+        SpeakerType speaker_type = static_cast<SpeakerType>(rx_packet.data()[0]);
+        uint8_t value = rx_packet.data()[1];
+
+        switch (speaker_type) {
+          case SpeakerType::FRONT_LEFT:
+            if (this->trim_front_left_number_ != nullptr) {
+              this->trim_front_left_number_->publish_state(value);
+            }
+            break;
+          case SpeakerType::FRONT_RIGHT:
+            if (this->trim_front_right_number_ != nullptr) {
+              this->trim_front_right_number_->publish_state(value);
+            }
+            break;
+          case SpeakerType::CENTER:
+            if (this->trim_center_number_ != nullptr) {
+              this->trim_center_number_->publish_state(value);
+            }
+            break;
+          case SpeakerType::SUBWOOFER:
+            if (this->trim_subwoofer_number_ != nullptr) {
+              this->trim_subwoofer_number_->publish_state(value);
+            }
+            break;
+          case SpeakerType::SURROUND_LEFT:
+            if (this->trim_surround_left_number_ != nullptr) {
+              this->trim_surround_left_number_->publish_state(value);
+            }
+            break;
+          case SpeakerType::SURROUND_RIGHT:
+            if (this->trim_surround_right_number_ != nullptr) {
+              this->trim_surround_right_number_->publish_state(value);
+            }
+            break;
+          default:
+            break;
+        }
+        break;
+      }
+
       // Switches
       case SoundSendPacket::Command::MUTE:
         if (this->mute_switch_ != nullptr) {
@@ -335,12 +433,11 @@ void SoundSendComponent::parse_reply_(uint8_t *data, uint16_t length) {
           this->power_switch_->publish_state(rx_packet.to_uint8());
         }
         break;
-      case SoundSendPacket::Command::VIRTUAL_DOLBY: {
+      case SoundSendPacket::Command::VIRTUAL_DOLBY:
         if (this->virtual_dolby_switch_ != nullptr) {
           this->virtual_dolby_switch_->publish_state(rx_packet.to_uint8());
         }
         break;
-      }
       case SoundSendPacket::Command::BASS_MANAGEMENT:
         if (this->bass_management_switch_ != nullptr) {
           this->bass_management_switch_->publish_state(rx_packet.to_uint8());

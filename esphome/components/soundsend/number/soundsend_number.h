@@ -62,5 +62,53 @@ class EqSubNumber : public number::Number, public Parented<SoundSendComponent> {
   void control(float value) override;
 };
 
+class TrimFrontLeftNumber : public number::Number, public Parented<SoundSendComponent> {
+ public:
+  TrimFrontLeftNumber() = default;
+
+ protected:
+  void control(float value) override;
+};
+
+class TrimFrontRightNumber : public number::Number, public Parented<SoundSendComponent> {
+ public:
+  TrimFrontRightNumber() = default;
+
+ protected:
+  void control(float value) override;
+};
+
+class TrimCenterNumber : public number::Number, public Parented<SoundSendComponent> {
+ public:
+  TrimCenterNumber() = default;
+
+ protected:
+  void control(float value) override;
+};
+
+class TrimSubwooferNumber : public number::Number, public Parented<SoundSendComponent> {
+ public:
+  TrimSubwooferNumber() = default;
+
+ protected:
+  void control(float value) override;
+};
+
+class TrimSurroundLeftNumber : public number::Number, public Parented<SoundSendComponent> {
+ public:
+  TrimSurroundLeftNumber() = default;
+
+ protected:
+  void control(float value) override;
+};
+
+class TrimSurroundRightNumber : public number::Number, public Parented<SoundSendComponent> {
+ public:
+  TrimSurroundRightNumber() = default;
+
+ protected:
+  void control(float value) override;
+};
+
 }  // namespace soundsend
 }  // namespace esphome

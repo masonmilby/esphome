@@ -43,6 +43,13 @@ class SoundSendComponent : public Component, public esphome::ble_client::BLEClie
   SUB_NUMBER(eq_voice)
   SUB_NUMBER(eq_mid_bass)
   SUB_NUMBER(eq_sub)
+
+  SUB_NUMBER(trim_front_left)
+  SUB_NUMBER(trim_front_right)
+  SUB_NUMBER(trim_center)
+  SUB_NUMBER(trim_subwoofer)
+  SUB_NUMBER(trim_surround_left)
+  SUB_NUMBER(trim_surround_right)
 #endif
 
 #ifdef USE_SWITCH
@@ -85,6 +92,13 @@ class SoundSendComponent : public Component, public esphome::ble_client::BLEClie
   void get_eq_mid_bass();
   void get_eq_sub();
 
+  void get_trim_front_left();
+  void get_trim_front_right();
+  void get_trim_center();
+  void get_trim_subwoofer();
+  void get_trim_surround_left();
+  void get_trim_surround_right();
+
   void set_volume(uint8_t value);
   void set_lip_sync(uint8_t value);
   void set_eq_high(uint8_t value);
@@ -92,6 +106,13 @@ class SoundSendComponent : public Component, public esphome::ble_client::BLEClie
   void set_eq_voice(uint8_t value);
   void set_eq_mid_bass(uint8_t value);
   void set_eq_sub(uint8_t value);
+
+  void set_trim_front_left(uint8_t value);
+  void set_trim_front_right(uint8_t value);
+  void set_trim_center(uint8_t value);
+  void set_trim_subwoofer(uint8_t value);
+  void set_trim_surround_left(uint8_t value);
+  void set_trim_surround_right(uint8_t value);
 
   // Switches
   void get_mute();
