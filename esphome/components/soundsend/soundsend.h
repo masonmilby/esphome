@@ -6,6 +6,7 @@
 #include "esphome/core/defines.h"
 
 #include "soundsend_const.h"
+#include "soundsend_packet.h"
 
 #include <esp_gattc_api.h>
 
@@ -74,6 +75,8 @@ class SoundSendComponent : public Component, public esphome::ble_client::BLEClie
 #endif
 
  public:
+  const char *const TAG = "soundsend";
+
   void dump_config() override;
   void setup() override {}
   void loop() override { this->process_queue_(); }
@@ -99,31 +102,11 @@ class SoundSendComponent : public Component, public esphome::ble_client::BLEClie
   void get_trim_surround_left();
   void get_trim_surround_right();
 
-  void set_volume(uint8_t value);
-  void set_lip_sync(uint8_t value);
-  void set_eq_high(uint8_t value);
-  void set_eq_mid_range(uint8_t value);
-  void set_eq_voice(uint8_t value);
-  void set_eq_mid_bass(uint8_t value);
-  void set_eq_sub(uint8_t value);
-
-  void set_trim_front_left(uint8_t value);
-  void set_trim_front_right(uint8_t value);
-  void set_trim_center(uint8_t value);
-  void set_trim_subwoofer(uint8_t value);
-  void set_trim_surround_left(uint8_t value);
-  void set_trim_surround_right(uint8_t value);
-
   // Switches
   void get_mute();
   void get_power();
   void get_virtual_dolby();
   void get_bass_management();
-
-  void set_mute(bool value);
-  void set_power(bool value);
-  void set_virtual_dolby(bool value);
-  void set_bass_management(bool value);
 
   // Text sensors
   void get_module_versions();
@@ -133,17 +116,11 @@ class SoundSendComponent : public Component, public esphome::ble_client::BLEClie
   void get_audio_source();
   void get_audio_mode();
 
-  void set_audio_source(uint8_t index);
-  void set_audio_mode(uint8_t index);
-
-  // Buttons
-  void press_query();
-
   bool is_power();
   bool is_audio_mode(AudioMode mode);
 
   void get_initial();
-  void queue_command(SoundSendPacket::Type type, SoundSendPacket::Command command, std::vector<uint8_t> data = {});
+  void queue_command(PacketType type, Command command, std::vector<uint8_t> data = {});
 
  protected:
   void pop_queue_();

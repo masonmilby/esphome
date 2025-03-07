@@ -9,14 +9,14 @@ namespace soundsend {
 void AudioSourceSelect::control(const std::string &value) {
   optional<size_t> index = this->index_of(value);
   if (index.has_value()) {
-    this->parent_->set_audio_source(index.value());
+    this->parent_->queue_command(PacketType::WRITE, Command::AUDIO_SOURCE, {static_cast<uint8_t>(index.value())});
   }
 }
 
 void AudioModeSelect::control(const std::string &value) {
   optional<size_t> index = this->index_of(value);
   if (index.has_value()) {
-    this->parent_->set_audio_mode(index.value());
+    this->parent_->queue_command(PacketType::WRITE, Command::AUDIO_MODE, {static_cast<uint8_t>(index.value())});
   }
 }
 

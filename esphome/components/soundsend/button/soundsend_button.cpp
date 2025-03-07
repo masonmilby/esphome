@@ -3,7 +3,7 @@
 namespace esphome {
 namespace soundsend {
 
-void QueryButton::press_action() { this->parent_->press_query(); }
+void QueryButton::press_action() { this->parent_->get_initial(); }
 
 }  // namespace soundsend
 }  // namespace esphome
