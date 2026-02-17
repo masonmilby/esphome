@@ -7,7 +7,6 @@ display:
       height: 320
   - platform: sdl
     id: sdl1
-    auto_clear_enabled: false
     dimensions:
       width: 480
       height: 480
@@ -19,7 +18,10 @@ touchscreen:
 
 lvgl:
   - id: lvgl_0
+    default_font: space16
     displays: sdl0
+    top_layer:
+
   - id: lvgl_1
     displays: sdl1
     on_idle:
@@ -41,3 +43,7 @@ lvgl:
           on_click:
             logger.log: Clicked
 
+font:
+  - file: "gfonts://Roboto"
+    id: space16
+    bpp: 4

@@ -1,13 +1,15 @@
+import logging
 from typing import Any
 
-import logging
-from esphome import automation
+from esphome import automation, pins
 import esphome.codegen as cg
-import esphome.config_validation as cv
-from esphome import pins
 from esphome.components import sensor
-from esphome.const import CONF_ID, PLATFORM_ESP32, PLATFORM_ESP8266, CONF_TRIGGER_ID
-from . import const, schema, validate, generate
+from esphome.components.esp32 import include_builtin_idf_component
+import esphome.config_validation as cv
+from esphome.const import CONF_ID, CONF_TRIGGER_ID, PLATFORM_ESP32, PLATFORM_ESP8266
+from esphome.core import CORE
+
+from . import const, generate, schema, validate
 
 CODEOWNERS = ["@olegtarasov"]
 MULTI_CONF = True
@@ -83,6 +85,12 @@ CONFIG_SCHEMA = cv.All(
 
 
 async def to_code(config: dict[str, Any]) -> None:
+    if CORE.is_esp32:
+        # Re-enable ESP-IDF's legacy driver component (excluded by default to save compile time)
+        # Provides driver/timer.h header for hardware timer API
+        # TODO: Remove this once opentherm migrates to GPTimer API (driver/gptimer.h)
+        include_builtin_idf_component("driver")
+
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
 

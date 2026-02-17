@@ -1,4 +1,13 @@
 import esphome.codegen as cg
+from esphome.components import esp32
+from esphome.components.esp32 import (
+    VARIANT_ESP32,
+    VARIANT_ESP32S2,
+    VARIANT_ESP32S3,
+    get_esp32_variant,
+    gpio,
+    include_builtin_idf_component,
+)
 import esphome.config_validation as cv
 from esphome.const import (
     CONF_HIGH_VOLTAGE_REFERENCE,
@@ -11,13 +20,6 @@ from esphome.const import (
     CONF_VOLTAGE_ATTENUATION,
 )
 from esphome.core import TimePeriod
-from esphome.components import esp32
-from esphome.components.esp32 import get_esp32_variant, gpio
-from esphome.components.esp32.const import (
-    VARIANT_ESP32,
-    VARIANT_ESP32S2,
-    VARIANT_ESP32S3,
-)
 
 AUTO_LOAD = ["binary_sensor"]
 DEPENDENCIES = ["esp32"]
@@ -255,9 +257,9 @@ CONFIG_SCHEMA = cv.All(
     cv.has_none_or_all_keys(CONF_WATERPROOF_GUARD_RING, CONF_WATERPROOF_SHIELD_DRIVER),
     esp32.only_on_variant(
         supported=[
-            esp32.const.VARIANT_ESP32,
-            esp32.const.VARIANT_ESP32S2,
-            esp32.const.VARIANT_ESP32S3,
+            esp32.VARIANT_ESP32,
+            esp32.VARIANT_ESP32S2,
+            esp32.VARIANT_ESP32S3,
         ]
     ),
     validate_variant_vars,
@@ -265,6 +267,11 @@ CONFIG_SCHEMA = cv.All(
 
 
 async def to_code(config):
+    # Re-enable ESP-IDF's touch sensor driver (excluded by default to save compile time)
+    include_builtin_idf_component("esp_driver_touch_sens")
+    # Legacy driver component provides driver/touch_sensor.h header
+    include_builtin_idf_component("driver")
+
     touch = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(touch, config)
 
@@ -294,9 +301,8 @@ async def to_code(config):
         )
     )
 
-    if get_esp32_variant() == VARIANT_ESP32:
-        if CONF_IIR_FILTER in config:
-            cg.add(touch.set_iir_filter(config[CONF_IIR_FILTER]))
+    if get_esp32_variant() == VARIANT_ESP32 and CONF_IIR_FILTER in config:
+        cg.add(touch.set_iir_filter(config[CONF_IIR_FILTER]))
 
     if get_esp32_variant() == VARIANT_ESP32S2 or get_esp32_variant() == VARIANT_ESP32S3:
         if CONF_FILTER_MODE in config:

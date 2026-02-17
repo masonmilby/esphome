@@ -3,6 +3,8 @@
 #include "e131_addressable_light_effect.h"
 #include "esphome/core/log.h"
 
+#include <algorithm>
+
 namespace esphome {
 namespace e131 {
 
@@ -53,7 +55,6 @@ void E131Component::setup() {
 }
 
 void E131Component::loop() {
-  std::vector<uint8_t> payload;
   E131Packet packet;
   int universe = 0;
   uint8_t buf[1460];
@@ -62,11 +63,9 @@ void E131Component::loop() {
   if (len == -1) {
     return;
   }
-  payload.resize(len);
-  memmove(&payload[0], buf, len);
 
-  if (!this->packet_(payload, universe, packet)) {
-    ESP_LOGV(TAG, "Invalid packet received of size %zu.", payload.size());
+  if (!this->packet_(buf, (size_t) len, universe, packet)) {
+    ESP_LOGV(TAG, "Invalid packet received of size %zd.", len);
     return;
   }
 
@@ -76,14 +75,15 @@ void E131Component::loop() {
 }
 
 void E131Component::add_effect(E131AddressableLightEffect *light_effect) {
-  if (light_effects_.count(light_effect)) {
+  if (std::find(light_effects_.begin(), light_effects_.end(), light_effect) != light_effects_.end()) {
     return;
   }
 
-  ESP_LOGD(TAG, "Registering '%s' for universes %d-%d.", light_effect->get_name().c_str(),
+  auto effect_name = light_effect->get_name();
+  ESP_LOGD(TAG, "Registering '%.*s' for universes %d-%d.", (int) effect_name.size(), effect_name.c_str(),
            light_effect->get_first_universe(), light_effect->get_last_universe());
 
-  light_effects_.insert(light_effect);
+  light_effects_.push_back(light_effect);
 
   for (auto universe = light_effect->get_first_universe(); universe <= light_effect->get_last_universe(); ++universe) {
     join_(universe);
@@ -91,14 +91,18 @@ void E131Component::add_effect(E131AddressableLightEffect *light_effect) {
 }
 
 void E131Component::remove_effect(E131AddressableLightEffect *light_effect) {
-  if (!light_effects_.count(light_effect)) {
+  auto it = std::find(light_effects_.begin(), light_effects_.end(), light_effect);
+  if (it == light_effects_.end()) {
     return;
   }
 
-  ESP_LOGD(TAG, "Unregistering '%s' for universes %d-%d.", light_effect->get_name().c_str(),
+  auto effect_name = light_effect->get_name();
+  ESP_LOGD(TAG, "Unregistering '%.*s' for universes %d-%d.", (int) effect_name.size(), effect_name.c_str(),
            light_effect->get_first_universe(), light_effect->get_last_universe());
 
-  light_effects_.erase(light_effect);
+  // Swap with last element and pop for O(1) removal (order doesn't matter)
+  *it = light_effects_.back();
+  light_effects_.pop_back();
 
   for (auto universe = light_effect->get_first_universe(); universe <= light_effect->get_last_universe(); ++universe) {
     leave_(universe);
