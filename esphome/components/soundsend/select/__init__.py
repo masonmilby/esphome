@@ -5,8 +5,8 @@ from esphome.const import ENTITY_CATEGORY_CONFIG
 
 from .. import CONF_SOUNDSEND_ID, SoundSendComponent, soundsend_ns
 
-AudioSourceSelect = soundsend_ns.enum("AudioSourceSelect", select.Select)
-AudioModeSelect = soundsend_ns.enum("AudioModeSelect", select.Select)
+AudioSourceSelect = soundsend_ns.class_("AudioSourceSelect", select.Select)
+AudioModeSelect = soundsend_ns.class_("AudioModeSelect", select.Select)
 
 CONF_AUDIO_SOURCE = "audio_source"
 CONF_AUDIO_MODE = "audio_mode"
